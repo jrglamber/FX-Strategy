@@ -334,7 +334,9 @@ def webhook():
         return jsonify({"ok": False, "error": "JSON body must be an object"}), 400
 
     if WEBHOOK_SECRET:
-        supplied = str(data.get("secret", "")).strip()
+        # Accept the secret either inside the TradingView JSON body or in the webhook URL:
+        # /webhook?secret=YOUR_SECRET
+        supplied = str(data.get("secret") or request.args.get("secret", "")).strip()
         if supplied != WEBHOOK_SECRET:
             return jsonify({"ok": False, "error": "Bad webhook secret"}), 403
 
